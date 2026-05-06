@@ -1,0 +1,29 @@
+{
+  "name": "@ikenga/cli",
+  "version": "0.0.0",
+  "description": "Command-line tool for installing, updating, and managing Ikenga pkgs.",
+  "license": "Apache-2.0",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/royalti-io/ikenga-cli.git"
+  },
+  "type": "module",
+  "bin": {
+    "ikenga": "./dist/ikenga"
+  },
+  "scripts": {
+    "build": "bun build ./src/index.ts --compile --outfile ./dist/ikenga --target bun",
+    "dev": "bun run ./src/index.ts",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@ikenga/contract": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest",
+    "typescript": "^5.4.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
