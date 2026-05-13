@@ -17,10 +17,13 @@
     "typecheck": "tsc -p tsconfig.json --noEmit"
   },
   "dependencies": {
-    "@ikenga/contract": "workspace:*"
+    "@ikenga/contract": "workspace:*",
+    "@ikenga/registry-client": "^0.1.0",
+    "tar": "^7.4.3"
   },
   "devDependencies": {
     "@types/bun": "latest",
+    "@types/tar": "^6.1.13",
     "typescript": "^5.4.0"
   },
   "publishConfig": {
