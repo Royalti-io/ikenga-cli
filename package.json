@@ -1,6 +1,6 @@
 {
   "name": "@ikenga/cli",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "Command-line tool for installing, updating, and managing Ikenga pkgs.",
   "license": "Apache-2.0",
   "repository": {
@@ -9,12 +9,21 @@
   },
   "type": "module",
   "bin": {
-    "ikenga": "./dist/ikenga"
+    "ikenga": "./dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "bun": ">=1.0"
   },
   "scripts": {
-    "build": "bun build ./src/index.ts --compile --outfile ./dist/ikenga --target bun",
+    "build": "bash scripts/build.sh",
     "dev": "bun run ./src/index.ts",
-    "typecheck": "tsc -p tsconfig.json --noEmit"
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "prepublishOnly": "bun run build"
   },
   "dependencies": {
     "@ikenga/registry-client": "^0.1.0",

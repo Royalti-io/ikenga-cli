@@ -1,19 +1,10 @@
 name: Release
 
-# Builds Bun-compiled binaries for every supported target whenever a
-# `v*` tag is pushed, then attaches them to a GitHub Release. Also exposes
+# Publishes @ikenga/cli to npm whenever a `v*` tag is pushed. Also exposes
 # workflow_dispatch so we can rebuild a tag manually.
 #
-# Bun's --compile mode is a cross-compiler: a single Linux runner can emit
-# binaries for every target via the --target flag. We don't need a matrix
-# of runners.
-#
-# Targets (https://bun.com/docs/bundler/executables):
-#   - bun-linux-x64          (glibc)
-#   - bun-linux-arm64        (glibc)
-#   - bun-darwin-x64
-#   - bun-darwin-arm64
-#   - bun-windows-x64
+# v0.2.0+ ships JS source (no bun --compile binaries). Distribution channel
+# is npm; users install Bun themselves. See README.md and ADR-010.
 
 on:
   push:
@@ -22,14 +13,15 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Tag to build (e.g. v0.1.1). Defaults to the workflow ref.'
+        description: 'Tag to publish (e.g. v0.2.0). Defaults to the workflow ref.'
         required: false
 
 permissions:
   contents: write
+  id-token: write  # required for npm provenance
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
     steps:
       - name: Resolve tag
@@ -49,30 +41,23 @@ jobs:
         with:
           bun-version: latest
 
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          registry-url: 'https://registry.npmjs.org'
+
       - name: Install deps
         run: bun install --frozen-lockfile || bun install
 
-      - name: Build all targets
-        run: |
-          set -e
-          mkdir -p artifacts
-          for target in bun-linux-x64 bun-linux-arm64 bun-darwin-x64 bun-darwin-arm64 bun-windows-x64; do
-            ext=""
-            if [[ "$target" == *windows* ]]; then ext=".exe"; fi
-            out="artifacts/ikenga-${target#bun-}${ext}"
-            echo "→ building $out"
-            bun build src/index.ts \
-              --compile \
-              --target="$target" \
-              --outfile "$out"
-          done
-          ls -la artifacts/
+      - name: Build
+        run: bun run build
 
-      - name: Generate SHA-256 sums
-        working-directory: artifacts
-        run: sha256sum * > SHA256SUMS
+      - name: Publish to npm
+        run: npm publish --provenance --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
-      - name: Create / update GitHub Release
+      - name: Create GitHub Release (notes only — no artifacts)
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ steps.tag.outputs.ref }}
@@ -80,12 +65,5 @@ jobs:
           draft: false
           prerelease: false
           generate_release_notes: true
-          files: |
-            artifacts/ikenga-linux-x64
-            artifacts/ikenga-linux-arm64
-            artifacts/ikenga-darwin-x64
-            artifacts/ikenga-darwin-arm64
-            artifacts/ikenga-windows-x64.exe
-            artifacts/SHA256SUMS
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
