@@ -33,7 +33,7 @@ jobs:
             echo "ref=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
         with:
           ref: ${{ steps.tag.outputs.ref }}
 
@@ -41,7 +41,7 @@ jobs:
         with:
           bun-version: latest
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
           node-version: '20'
           registry-url: 'https://registry.npmjs.org'
@@ -58,7 +58,7 @@ jobs:
           NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Create GitHub Release (notes only — no artifacts)
-        uses: softprops/action-gh-release@v2
+        uses: softprops/action-gh-release@v3
         with:
           tag_name: ${{ steps.tag.outputs.ref }}
           name: ${{ steps.tag.outputs.ref }}
