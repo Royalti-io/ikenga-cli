@@ -49,5 +49,6 @@ Iframe code changes flow through your dev server's HMR (Vite, Next, …); sideca
 
 ## Versioning
 
+`v0.3.0` — adds `ikenga dev <path>` for hot-mounting pkgs into a running shell via the iyke localhost bridge. Watcher-driven manifest reload + clean `Ctrl-C` unregister. Requires the corresponding shell-side dev-mode kernel (lands in shell `v0.0.5+`).
 `v0.2.0` — JS-source npm distribution; requires Bun on `$PATH`.
 `v0.1.x` — bun-compiled standalone binaries (deprecated; available on the GitHub Releases page until the next archive sweep).
