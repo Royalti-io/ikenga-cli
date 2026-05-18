@@ -26,9 +26,26 @@ ikenga update <pkg>                      # update one
 ikenga update --all                      # update everything outdated
 ikenga remove com.ikenga.hello           # by manifest id, or...
 ikenga remove @ikenga/pkg-hello          # ...by npm name
+ikenga dev ./my-pkg                      # hot-mount into running shell
 ```
 
-Installs land in the shell's pkgs directory (overridable with `IKENGA_APP_DATA_DIR`). The shell registers them on next boot. The CLI does not currently talk to a running shell over IPC; that's a planned enhancement.
+`list / add / update / remove` mutate the shell's pkgs directory (overridable with `IKENGA_APP_DATA_DIR`); the shell registers them on next boot.
+
+### `ikenga dev <path>` — hot-mount for development
+
+Different shape: `dev` talks to a **running** shell over its localhost iyke bridge instead of touching disk. Registers the pkg with `source.kind = "dev"` (auto-trusted, regardless of id namespace) and spawns a manifest watcher in the kernel so edits to `manifest.json` or any `restart_when_changed` glob trip an in-place reload — no shell restart.
+
+Requires the shell to be running. The CLI discovers its port + bearer token from `control.json` in the shell's local data dir.
+
+```bash
+ikenga dev /home/me/code/my-pkg
+# → mounted as com.example.my-pkg v0.1.0
+# →   Routes: /pkg/com.example.my-pkg/
+# Edit manifest.json or watched src/ files; reload fires automatically.
+# Ctrl-C to unregister.
+```
+
+Iframe code changes flow through your dev server's HMR (Vite, Next, …); sidecar / MCP source edits respawn via the supervisor watcher; manifest edits trigger a full pkg reload that emits a `pkg-reloaded` event the shell's iframe + webview hosts listen for. See [`docs/pkg-patterns/07-dev-mode.md`](https://github.com/Royalti-io/ikenga/blob/main/docs/pkg-patterns/07-dev-mode.md) for the kernel semantics.
 
 ## Versioning
 

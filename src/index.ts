@@ -8,11 +8,12 @@
 // flow is: CLI mutates disk → user restarts shell → kernel registers.
 
 import { addCommand } from './commands/add.js';
+import { devCommand } from './commands/dev.js';
 import { listCommand } from './commands/list.js';
 import { removeCommand } from './commands/remove.js';
 import { updateCommand } from './commands/update.js';
 
-const SUBCOMMANDS = ['list', 'add', 'update', 'remove'] as const;
+const SUBCOMMANDS = ['list', 'add', 'update', 'remove', 'dev'] as const;
 type Subcommand = (typeof SUBCOMMANDS)[number];
 
 function usage(): string {
@@ -23,6 +24,7 @@ Usage:
   ikenga add <pkg>[@<version>] [--dry-run]
   ikenga update [<pkg> | --all] [--dry-run]
   ikenga remove <pkg>
+  ikenga dev <path>
 
 Examples:
   ikenga list                              # what's installed locally
@@ -32,9 +34,15 @@ Examples:
   ikenga update --all                      # update everything outdated
   ikenga remove com.ikenga.hello           # by manifest id, or...
   ikenga remove @ikenga/pkg-hello          # ...by npm name
+  ikenga dev ./my-pkg                      # hot-mount into running shell
 
 Installs land in the shell's pkgs directory (overridable with
 IKENGA_APP_DATA_DIR). The shell registers them on next boot.
+
+\`ikenga dev <path>\` is different — it talks to a running shell over its
+localhost iyke bridge, registers the pkg with hot-reload semantics
+(manifest edits trigger an in-place reload, no shell restart), and
+unregisters cleanly on Ctrl-C. Requires the shell to be running.
 `;
 }
 
@@ -84,6 +92,14 @@ async function main(): Promise<number> {
 				return 1;
 			}
 			return removeCommand(spec);
+		}
+		case 'dev': {
+			const path = rest.find((a) => !a.startsWith('-'));
+			if (!path) {
+				process.stderr.write('usage: ikenga dev <path>\n');
+				return 1;
+			}
+			return devCommand(path);
 		}
 	}
 }
