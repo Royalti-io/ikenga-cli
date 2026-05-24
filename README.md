@@ -1,6 +1,17 @@
 # @ikenga/cli
 
-Command-line tool for managing Ikenga pkgs.
+[![Version](https://img.shields.io/badge/version-v0.3.0-blue.svg)](https://github.com/Royalti-io/ikenga-cli/releases)
+[![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
+
+> `ikenga` — the disk-side package manager for the Ikenga workspace. Install, update, and
+> hot-mount pkgs.
+
+## What it is
+
+`ikenga` manages packages on disk: what's installed, what's available in the registry, and
+the dev loop for authoring your own. It's one of two Ikenga CLIs — the **disk-side** one.
+(The other, [`iyke`](https://github.com/Royalti-io/iyke-cli), drives a *running* shell.
+They share no code.)
 
 ## Install
 
@@ -52,3 +63,12 @@ Iframe code changes flow through your dev server's HMR (Vite, Next, …); sideca
 `v0.3.0` — adds `ikenga dev <path>` for hot-mounting pkgs into a running shell via the iyke localhost bridge. Watcher-driven manifest reload + clean `Ctrl-C` unregister. Requires the corresponding shell-side dev-mode kernel (lands in shell `v0.0.5+`).
 `v0.2.0` — JS-source npm distribution; requires Bun on `$PATH`.
 `v0.1.x` — bun-compiled standalone binaries (deprecated; available on the GitHub Releases page until the next archive sweep).
+
+## Links
+
+- [`iyke-cli`](https://github.com/Royalti-io/iyke-cli) — the runtime controller (the *other* CLI)
+- [`ikenga`](https://github.com/Royalti-io/ikenga) — the desktop shell
+
+## License
+
+Apache-2.0 — see [`LICENSE`](LICENSE).
