@@ -25,7 +25,12 @@ async function listAvailable(opts: ListOptions): Promise<number> {
 	try {
 		const { index } = await fetchIndex();
 		const installed = new Map(listInstalled().map((p) => [p.id, p.version]));
-		const rows = index.pkgs.map((entry) => {
+		// Hide dev/test fixtures + scaffolds from the browse listing. They remain
+		// installable by exact name via `ikenga add`/`update`, which don't filter.
+		const visiblePkgs = index.pkgs.filter(
+			(entry) => (entry as { visibility?: string }).visibility !== 'hidden',
+		);
+		const rows = visiblePkgs.map((entry) => {
 			const installedVersion = installed.get(npmNameToPkgId(entry.name));
 			let state: 'installed' | 'outdated' | 'available' = 'available';
 			if (installedVersion) {
@@ -44,7 +49,7 @@ async function listAvailable(opts: ListOptions): Promise<number> {
 			process.stdout.write(JSON.stringify(rows, null, 2) + '\n');
 			return 0;
 		}
-		process.stdout.write(`${index.pkgs.length} pkg(s) in registry · signed by minisign key on disk\n\n`);
+		process.stdout.write(`${visiblePkgs.length} pkg(s) in registry · signed by minisign key on disk\n\n`);
 		for (const r of rows) {
 			const marker =
 				r.state === 'outdated'
