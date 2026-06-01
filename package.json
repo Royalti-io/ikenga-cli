@@ -30,6 +30,7 @@
     "tar": "^7.4.3"
   },
   "devDependencies": {
+    "@changesets/cli": "^2.31.0",
     "@types/bun": "latest",
     "@types/tar": "^6.1.13",
     "typescript": "^5.4.0"

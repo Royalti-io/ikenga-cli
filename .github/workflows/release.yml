@@ -1,41 +1,33 @@
-name: Release
-
-# Publishes @ikenga/cli to npm whenever a `v*` tag is pushed. Also exposes
-# workflow_dispatch so we can rebuild a tag manually.
+# Release @ikenga/cli via Changesets.
 #
-# v0.2.0+ ships JS source (no bun --compile binaries). Distribution channel
-# is npm; users install Bun themselves. See README.md and ADR-010.
+# Flow: PR with a changeset (`npx changeset`) → on merge to main this opens a
+# "chore: version packages" PR → merging that publishes to npm (provenance) and
+# creates a GitHub Release. Requires the NPM_TOKEN repo secret.
+#
+# Build runs via bun (scripts/build.sh); the changeset commands run via npx so
+# the publish goes through npm regardless of the dev package manager.
+
+name: Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches: [main]
   workflow_dispatch:
-    inputs:
-      tag:
-        description: 'Tag to publish (e.g. v0.2.0). Defaults to the workflow ref.'
-        required: false
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 permissions:
   contents: write
-  id-token: write  # required for npm provenance
+  pull-requests: write
+  id-token: write # npm provenance
 
 jobs:
-  publish:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Resolve tag
-        id: tag
-        run: |
-          if [ -n "${{ github.event.inputs.tag }}" ]; then
-            echo "ref=${{ github.event.inputs.tag }}" >> "$GITHUB_OUTPUT"
-          else
-            echo "ref=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
-          fi
-
       - uses: actions/checkout@v6
         with:
-          ref: ${{ steps.tag.outputs.ref }}
+          fetch-depth: 0
 
       - uses: oven-sh/setup-bun@v2
         with:
@@ -43,27 +35,24 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '20'
+          node-version: 20
           registry-url: 'https://registry.npmjs.org'
 
-      - name: Install deps
+      - name: Install
         run: bun install --frozen-lockfile || bun install
 
       - name: Build
         run: bun run build
 
-      - name: Publish to npm
-        run: npm publish --provenance --access public
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-
-      - name: Create GitHub Release (notes only — no artifacts)
-        uses: softprops/action-gh-release@v3
+      - name: Create Release PR or publish
+        uses: changesets/action@v1
         with:
-          tag_name: ${{ steps.tag.outputs.ref }}
-          name: ${{ steps.tag.outputs.ref }}
-          draft: false
-          prerelease: false
-          generate_release_notes: true
+          version: npx changeset version
+          publish: npx changeset publish
+          title: 'chore: version packages'
+          commit: 'chore: version packages'
+          createGithubReleases: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_PROVENANCE: 'true'
