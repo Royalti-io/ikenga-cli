@@ -9,11 +9,12 @@
 
 import { addCommand } from './commands/add.js';
 import { devCommand } from './commands/dev.js';
+import { doctorCommand } from './commands/doctor.js';
 import { listCommand } from './commands/list.js';
 import { removeCommand } from './commands/remove.js';
 import { updateCommand } from './commands/update.js';
 
-const SUBCOMMANDS = ['list', 'add', 'update', 'remove', 'dev'] as const;
+const SUBCOMMANDS = ['list', 'add', 'update', 'remove', 'dev', 'doctor'] as const;
 type Subcommand = (typeof SUBCOMMANDS)[number];
 
 function usage(): string {
@@ -25,6 +26,7 @@ Usage:
   ikenga update [<pkg> | --all] [--dry-run]
   ikenga remove <pkg>
   ikenga dev <path>
+  ikenga doctor [--fix]
 
 Examples:
   ikenga list                              # what's installed locally
@@ -100,6 +102,9 @@ async function main(): Promise<number> {
 				return 1;
 			}
 			return devCommand(path);
+		}
+		case 'doctor': {
+			return doctorCommand({ fix: rest.includes('--fix') });
 		}
 	}
 }
