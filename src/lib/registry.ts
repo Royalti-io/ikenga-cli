@@ -12,7 +12,7 @@ import {
 	type RegistryEntry,
 } from '@ikenga/registry-client';
 
-export const REGISTRY_URL = 'https://royalti-io.github.io/ikenga-registry/index.json';
+export const REGISTRY_URL = 'https://registry.ikenga.dev/index.json';
 export const REGISTRY_PUBKEY = 'RWRTqugAYXnZRgZPMyuqRNB3G41wg+AhSU2yT8nmDNNQlWQPeCfRXAvI';
 
 export type { FetchedIndex, InstallStep, PkgDetail, RegistryEntry };
