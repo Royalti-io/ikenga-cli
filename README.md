@@ -1,6 +1,6 @@
 # @ikenga/cli
 
-[![Version](https://img.shields.io/badge/version-v0.3.0-blue.svg)](https://github.com/Royalti-io/ikenga-cli/releases)
+[![Version](https://img.shields.io/badge/version-v0.3.0-blue.svg)](https://github.com/ikenga-hq/ikenga-cli/releases)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue.svg)](LICENSE)
 
 > `ikenga` — the disk-side package manager for the Ikenga workspace. Install, update, and
@@ -10,7 +10,7 @@
 
 `ikenga` manages packages on disk: what's installed, what's available in the registry, and
 the dev loop for authoring your own. It's one of two Ikenga CLIs — the **disk-side** one.
-(The other, [`iyke`](https://github.com/Royalti-io/iyke-cli), drives a *running* shell.
+(The other, [`iyke`](https://github.com/ikenga-hq/iyke-cli), drives a *running* shell.
 They share no code.)
 
 ## Install
@@ -56,7 +56,7 @@ ikenga dev /home/me/code/my-pkg
 # Ctrl-C to unregister.
 ```
 
-Iframe code changes flow through your dev server's HMR (Vite, Next, …); sidecar / MCP source edits respawn via the supervisor watcher; manifest edits trigger a full pkg reload that emits a `pkg-reloaded` event the shell's iframe + webview hosts listen for. See [`docs/pkg-patterns/07-dev-mode.md`](https://github.com/Royalti-io/ikenga/blob/main/docs/pkg-patterns/07-dev-mode.md) for the kernel semantics.
+Iframe code changes flow through your dev server's HMR (Vite, Next, …); sidecar / MCP source edits respawn via the supervisor watcher; manifest edits trigger a full pkg reload that emits a `pkg-reloaded` event the shell's iframe + webview hosts listen for. See [`docs/pkg-patterns/07-dev-mode.md`](https://github.com/ikenga-hq/ikenga/blob/main/docs/pkg-patterns/07-dev-mode.md) for the kernel semantics.
 
 ## Versioning
 
@@ -66,8 +66,8 @@ Iframe code changes flow through your dev server's HMR (Vite, Next, …); sideca
 
 ## Links
 
-- [`iyke-cli`](https://github.com/Royalti-io/iyke-cli) — the runtime controller (the *other* CLI)
-- [`ikenga`](https://github.com/Royalti-io/ikenga) — the desktop shell
+- [`iyke-cli`](https://github.com/ikenga-hq/iyke-cli) — the runtime controller (the *other* CLI)
+- [`ikenga`](https://github.com/ikenga-hq/ikenga) — the desktop shell
 
 ## License
 
