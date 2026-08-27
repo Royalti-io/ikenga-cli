@@ -8,6 +8,8 @@
 // only after the manifest cross-check passes.
 
 import { createHash } from 'node:crypto';
+import { execFile } from 'node:child_process';
+import { promisify } from 'node:util';
 import {
 	existsSync,
 	mkdirSync,
@@ -20,6 +22,8 @@ import { dirname, join } from 'node:path';
 import * as tar from 'tar';
 import type { InstallStep } from '@ikenga/registry-client';
 import { pkgsDir } from './paths.js';
+
+const execFileAsync = promisify(execFile);
 
 export interface InstallOptions {
 	/** If true, only print what would happen. */
@@ -74,7 +78,10 @@ export async function installStep(
 			);
 		}
 
-		// 5. Atomic-ish swap: backup existing → move staging → final.
+		// 5. Materialize npm dependencies if package.json has dependencies.
+		await materializeNpmDeps(stagingDir, log);
+
+		// 6. Atomic-ish swap: backup existing → move staging → final.
 		if (existsSync(finalDir)) {
 			renameSync(finalDir, backupDir);
 		}
@@ -85,7 +92,7 @@ export async function installStep(
 			throw err;
 		}
 
-		// 6. Success — drop backup + tarball.
+		// 7. Success — drop backup + tarball.
 		if (existsSync(backupDir)) rmSync(backupDir, { recursive: true, force: true });
 		rmSync(tarballPath, { force: true });
 
@@ -112,6 +119,52 @@ export function uninstallPkg(pkgId: string): boolean {
 	if (!existsSync(dir)) return false;
 	rmSync(dir, { recursive: true, force: true });
 	return true;
+}
+
+/**
+ * Materialize npm dependencies for an unpacked pkg directory.
+ * If package.json exists and has non-empty `dependencies`, runs `npm install --omit=dev --no-audit --no-fund`.
+ * Falls back to `bun install` or `pnpm install` if npm fails.
+ */
+export async function materializeNpmDeps(
+	pkgDir: string,
+	log: (msg: string) => void = () => {},
+): Promise<void> {
+	const pkgJsonPath = join(pkgDir, 'package.json');
+	if (!existsSync(pkgJsonPath)) return;
+
+	try {
+		const pkgJson = JSON.parse(readFileSync(pkgJsonPath, 'utf8'));
+		const deps = pkgJson.dependencies;
+		if (!deps || typeof deps !== 'object' || Object.keys(deps).length === 0) {
+			return;
+		}
+
+		const depNames = Object.keys(deps);
+		log(`materializing ${depNames.length} npm dependency(ies) (${depNames.slice(0, 3).join(', ')}${depNames.length > 3 ? '...' : ''})`);
+
+		try {
+			await execFileAsync('npm', ['install', '--omit=dev', '--no-audit', '--no-fund'], {
+				cwd: pkgDir,
+				timeout: 120_000,
+			});
+			log(`npm dependencies materialized successfully`);
+		} catch (npmErr) {
+			try {
+				await execFileAsync('bun', ['install', '--production'], {
+					cwd: pkgDir,
+					timeout: 120_000,
+				});
+				log(`bun dependencies materialized successfully`);
+			} catch (bunErr) {
+				throw new Error(
+					`failed to materialize npm dependencies for ${pkgDir}: ${(npmErr as Error).message}`,
+				);
+			}
+		}
+	} catch (err) {
+		throw new Error(`npm dependency materialization failed: ${(err as Error).message}`);
+	}
 }
 
 // ─── helpers ─────────────────────────────────────────────────────────────────
