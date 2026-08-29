@@ -12,8 +12,8 @@ import {
 	type RegistryEntry,
 } from '@ikenga/registry-client';
 
-export const REGISTRY_URL = 'https://registry.ikenga.dev/index.json';
-export const REGISTRY_PUBKEY = 'RWRTqugAYXnZRgZPMyuqRNB3G41wg+AhSU2yT8nmDNNQlWQPeCfRXAvI';
+export const REGISTRY_URL = process.env.IKENGA_REGISTRY_URL || 'https://registry.ikenga.dev/index.json';
+export const REGISTRY_PUBKEY = process.env.IKENGA_REGISTRY_PUBKEY || 'RWRTqugAYXnZRgZPMyuqRNB3G41wg+AhSU2yT8nmDNNQlWQPeCfRXAvI';
 
 export type { FetchedIndex, InstallStep, PkgDetail, RegistryEntry };
 

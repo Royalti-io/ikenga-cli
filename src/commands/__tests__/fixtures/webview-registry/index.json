@@ -1,0 +1,12 @@
+{
+  "$schemaVersion": 1,
+  "updatedAt": "2026-08-29T15:58:02Z",
+  "pkgs": [
+    {
+      "name": "com.example.webview",
+      "latest": "1.0.0",
+      "detail": "file:///home/nedjamez/royalti-co/ikenga/cli/src/commands/__tests__/fixtures/webview-registry/pkgs/com.example.webview.json",
+      "kind": "webview"
+    }
+  ]
+}
