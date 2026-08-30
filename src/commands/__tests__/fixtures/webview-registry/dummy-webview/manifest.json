@@ -1,0 +1,32 @@
+{
+  "id": "com.example.webview",
+  "name": "Dummy Webview",
+  "version": "1.0.0",
+  "ikenga_api": "4",
+  "kind": "embedded",
+  "author": {
+    "name": "Test"
+  },
+  "capabilities": {
+    "webview": {
+      "child_webviews": true,
+      "partitions": [
+        "default"
+      ],
+      "allowed_origins": [
+        "https://example.com",
+        "https://*.example.com"
+      ]
+    }
+  },
+  "ui": {
+    "routes": [
+      {
+        "path": "/",
+        "kind": "webview",
+        "source": "https://example.com",
+        "partition": "default"
+      }
+    ]
+  }
+}

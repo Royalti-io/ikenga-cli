@@ -1,0 +1,26 @@
+{
+  "$schemaVersion": 1,
+  "name": "com.example.webview",
+  "updatedAt": "2026-08-29T15:58:02Z",
+  "versions": [
+    {
+      "version": "1.0.0",
+      "publishedAt": "2026-08-29T15:58:02Z",
+      "tarball": "file:///home/nedjamez/royalti-co/ikenga/cli/src/commands/__tests__/fixtures/webview-registry/tarballs/com.example.webview-1.0.0.tgz",
+      "integrity": "sha512-Qj8mHU8gBdl60Klsw1pA6vm/GxPok1TO0rddhMHAwVAFav/DGkMI+egfDXKKtkIQI0qmbo7sHTk43zgHOxMfbw==",
+      "size": 378,
+      "manifest": {
+  "id": "com.example.webview",
+  "name": "Dummy Webview",
+  "version": "1.0.0",
+  "ikenga_api": "1",
+  "kind": "webview",
+  "author": { "name": "Test" },
+  "window": {
+    "label": "main",
+    "url": "index.html"
+  }
+}
+    }
+  ]
+}
