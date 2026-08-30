@@ -1,5 +1,11 @@
 # @ikenga/cli
 
+## 0.4.2
+
+### Patch Changes
+
+- 78e2a03: fix(install): materialize npm dependencies on package install (#9); test webview-kind installs against a local signed index (#10)
+
 ## 0.4.1
 
 ### Patch Changes
