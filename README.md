@@ -38,7 +38,7 @@ ikenga update --all                      # update everything outdated
 ikenga remove com.ikenga.hello           # by manifest id, or...
 ikenga remove @ikenga/pkg-hello          # ...by npm name
 ikenga dev ./my-pkg                      # hot-mount into running shell
-ikenga doctor                             # diagnose environment and setup
+ikenga doctor [--fix]                    # health-check pkg installs; --fix repairs them
 ```
 
 `list / add / update / remove` mutate the shell's pkgs directory (overridable with `IKENGA_APP_DATA_DIR`); the shell registers them on next boot.
@@ -61,7 +61,7 @@ Iframe code changes flow through your dev server's HMR (Vite, Next, …); sideca
 
 ## Versioning
 
-`v0.4.2` — adds `ikenga doctor` for environment diagnostics.
+`v0.4.2` — current. Adds `ikenga doctor [--fix]` (v0.4.0), a bridge-first health check that detects broken or orphaned pkg installs through the running shell and can repair them; resolves the registry from `registry.ikenga.dev` (v0.4.1); materializes npm dependencies on install (v0.4.2).
 `v0.3.0` — adds `ikenga dev <path>` for hot-mounting pkgs into a running shell via the iyke localhost bridge. Watcher-driven manifest reload + clean `Ctrl-C` unregister. Requires the corresponding shell-side dev-mode kernel (lands in shell `v0.0.5+`).
 `v0.2.0` — JS-source npm distribution; requires Bun on `$PATH`.
 `v0.1.x` — bun-compiled standalone binaries (deprecated; available on the GitHub Releases page until the next archive sweep).
