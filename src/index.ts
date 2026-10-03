@@ -13,39 +13,13 @@ import { doctorCommand } from './commands/doctor.js';
 import { listCommand } from './commands/list.js';
 import { removeCommand } from './commands/remove.js';
 import { updateCommand } from './commands/update.js';
+import { renderCliJson, renderUsage, SUBCOMMANDS } from './commands-table.js';
 
-const SUBCOMMANDS = ['list', 'add', 'update', 'remove', 'dev', 'doctor'] as const;
-type Subcommand = (typeof SUBCOMMANDS)[number];
+type Subcommand = 'list' | 'add' | 'update' | 'remove' | 'dev' | 'doctor';
 
+// The help text and `--help --json` both come from src/commands-table.ts.
 function usage(): string {
-	return `ikenga — pkg manager for the Ikenga shell
-
-Usage:
-  ikenga list [--available] [--json]
-  ikenga add <pkg>[@<version>] [--dry-run]
-  ikenga update [<pkg> | --all] [--dry-run]
-  ikenga remove <pkg>
-  ikenga dev <path>
-  ikenga doctor [--fix]
-
-Examples:
-  ikenga list                              # what's installed locally
-  ikenga list --available                  # what's in the registry
-  ikenga add @ikenga/pkg-hello             # install latest
-  ikenga add @ikenga/pkg-hello@0.1.0       # install a specific version
-  ikenga update --all                      # update everything outdated
-  ikenga remove com.ikenga.hello           # by manifest id, or...
-  ikenga remove @ikenga/pkg-hello          # ...by npm name
-  ikenga dev ./my-pkg                      # hot-mount into running shell
-
-Installs land in the shell's pkgs directory (overridable with
-IKENGA_APP_DATA_DIR). The shell registers them on next boot.
-
-\`ikenga dev <path>\` is different — it talks to a running shell over its
-localhost iyke bridge, registers the pkg with hot-reload semantics
-(manifest edits trigger an in-place reload, no shell restart), and
-unregisters cleanly on Ctrl-C. Requires the shell to be running.
-`;
+	return renderUsage();
 }
 
 async function main(): Promise<number> {
@@ -53,6 +27,10 @@ async function main(): Promise<number> {
 	const sub = argv[0];
 
 	if (!sub || sub === '--help' || sub === '-h') {
+		if (argv.includes('--json')) {
+			process.stdout.write(renderCliJson(process.env.IKENGA_CLI_VERSION ?? 'dev'));
+			return 0;
+		}
 		process.stdout.write(usage());
 		return 0;
 	}
@@ -61,7 +39,7 @@ async function main(): Promise<number> {
 		return 0;
 	}
 
-	if (!(SUBCOMMANDS as readonly string[]).includes(sub)) {
+	if (!SUBCOMMANDS.includes(sub)) {
 		process.stderr.write(`unknown command: ${sub}\n\n`);
 		process.stdout.write(usage());
 		return 1;

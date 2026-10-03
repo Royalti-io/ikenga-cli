@@ -24,4 +24,8 @@ bun build ./src/index.ts \
   --define "process.env.IKENGA_CLI_VERSION=\"$VERSION\""
 
 chmod +x ./dist/index.js
+
+# The command reference (rendered from src/commands-table.ts) ships next to the
+# bundle so the docs can read the exact version that was published.
+bun ./dist/index.js --help --json > ./dist/cli.json
 echo "→ dist/index.js  (v$VERSION, $(wc -c < ./dist/index.js | awk '{print $1}') bytes)"
