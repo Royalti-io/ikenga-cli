@@ -1,5 +1,11 @@
 # @ikenga/cli
 
+## 0.5.0
+
+### Minor Changes
+
+- 5f06fa7: Add `ikenga --help --json`, which prints the command reference as JSON. The published package now includes the same document as `dist/cli.json`. The help text itself is unchanged, byte for byte; it is now rendered from the same command table.
+
 ## 0.4.2
 
 ### Patch Changes
